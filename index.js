@@ -43,16 +43,18 @@ Traducere
 <br>
 
 <label>
-<input type="radio" name="mode" value="interview">
-Interviu
+<input type="radio" name="mode" value="email">
+Email profesional
+</label>
+<br>
+
+<label>
+<input type="radio" name="mode" value="transport">
+🚛 Transport
 </label>
 
 <br>
 
-<label>
-<input type="radio" name="mode" value="email">
-Email profesional
-</label>
 
 <br><br>
 
