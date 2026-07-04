@@ -131,7 +131,19 @@ function clearMessage() {
 }
 
 async function correctText() {
-    alert("Corectorul va fi conectat în pasul următor.");
+    const textarea = document.querySelector("textarea[name='message']");
+    const text = textarea.value;
+
+    const formData = new FormData();
+    formData.append("message", text);
+
+    const response = await fetch("/correct", {
+        method: "POST",
+        body: new URLSearchParams(formData)
+    });
+
+    const correctedText = await response.text();
+    textarea.value = correctedText;
 }
 </script>
 
