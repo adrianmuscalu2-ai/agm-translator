@@ -144,7 +144,8 @@ async function correctText() {
    document.getElementById("loading").style.display = "block";
     const formData = new FormData();
     formData.append("message", text);
-
+const mode = document.querySelector('input[name="mode"]:checked').value;
+formData.append("mode", mode);
     const response = await fetch("/correct", {
         method: "POST",
         body: new URLSearchParams(formData)

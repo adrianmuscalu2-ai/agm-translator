@@ -30,23 +30,35 @@ app.post("/ask", async (req, res) => {
         console.log("LANG =", lang);
         console.log("MODE =", mode);
 
-        let prompt = "";
+        let context = "";
+let prompt = "";
 
+if (mode === "interview") {
+  context = "Context: interviu de angajare.";
+}
+
+if (mode === "email") {
+  context = "Context: email profesional.";
+}
+
+if (mode === "transport") {
+  context = "Context: transport rutier european.";
+}
         if (mode === "interview") {
             prompt =
                 lang === "ro"
-                    ? "Formulează un răspuns natural și profesionist pentru un interviu de angajare în România. Răspunde doar cu textul final.\n\n"
-                    : "Formulează un răspuns natural și profesionist pentru un interviu de angajare în Germania. Răspunde doar cu textul final.\n\n";
+                    ? context + "\nFormulează un răspuns natural și profesionist pentru un interviu de angajare în România. Răspunde doar cu textul final.\n\n"
+                    : context + "\nFormulează un răspuns natural și profesionist pentru un interviu de angajare în Germania. Răspunde doar cu textul final.\n\n";
         } else if (mode === "email") {
             prompt =
                 lang === "ro"
-                    ? "Transformă textul într-un e-mail profesional în română. Răspunde doar cu e-mailul final.\n\n"
-                    : "Transformă textul într-un e-mail profesional în germană. Răspunde doar cu e-mailul final.\n\n";
+                    ? context + "\nTransformă textul într-un e-mail profesional în română. Răspunde doar cu e-mailul final.\n\n"
+                    : context + "\nTransformă textul într-un e-mail profesional în germană. Răspunde doar cu e-mailul final.\n\n";
         } else if (mode === "transport") {
             prompt =
                 lang === "ro"
-                    ? "Acționezi ca un expert în transport rutier internațional. Reformulează și traduce mesajul în română, clar, natural și profesionist. Răspunde doar cu textul final.\n\n"
-                    : "Act as an expert in international road transport. Rewrite and translate the message into German, clearly, naturally and professionally. Reply only with the final text.\n\n";
+                    ? context + "\nAcționezi ca un expert în transport rutier internațional. Reformulează și traduce mesajul în română, clar, natural și profesionist. Răspunde doar cu textul final.\n\n"
+                    : context + "\nAct as an expert in international road transport. Rewrite and translate the message into German, clearly, naturally and professionally. Reply only with the final text.\n\n";
         } else {
             prompt =
                 lang === "ro"
@@ -154,10 +166,24 @@ app.post("/correct", async (req, res) => {
 app.post("/improve", async (req, res) => {
   try {
     const message = req.body.message || "";
+ const mode = req.body.mode || "interview"; 
+  let context = "";
 
+if (mode === "interview") {
+  context = "Context: interviu de angajare. Textul trebuie să sune politicos, clar și potrivit pentru un angajator.";
+}
+
+if (mode === "email") {
+  context = "Context: email profesional. Textul trebuie să fie structurat, respectuos și potrivit pentru comunicare scrisă.";
+}
+
+if (mode === "transport") {
+  context = "Context: transport european. Textul trebuie să fie clar, practic și potrivit pentru șoferi, dispeceri, rampe, încărcare și descărcare.";
+} 
     const response = await client.responses.create({
       model: "gpt-4.1-mini",
       input: `
+      ${context}
 Reformulează următorul mesaj într-un stil profesionist și natural.
 Corectează ortografia, gramatica și punctuația.
 Păstrează sensul mesajului.
