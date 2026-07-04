@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hermes Translator</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container"></div>
+    <h1>TEST HERMES 999</h1>
+
+<p>AI Translator for Drivers</p>
+
+<p><i>Scrie ce vrei să spui la interviu. Hermes traduce politicos și natural.</i></p>
+
+<h2>Direcția traducerii</h2>
+<form method="POST" action="/ask">
+
+<textarea name="message" rows="6" cols="60"></textarea>
+
+<br><br>
+
+<label>
+<input type="radio" name="lang" value="de" checked>
+Română ➜ Germană
+</label>
+
+
+
+<label>
+<input type="radio" name="lang" value="ro">
+Germană ➜ Română
+</label>
+<br><br>
+
+
+<b>Mod:</b><br><br>
+
+<label>
+<input type="radio" name="mode" value="interview" checked>
+🎤 Interviu de angajare
+</label>
+
+<br>
+
+<label>
+<input type="radio" name="mode" value="email">
+📧 Email profesional
+</label>
+
+<br>
+
+<label>
+<input type="radio" name="mode" value="transport">
+🚚 Transport
+</label>
+<br><br>
+
+<button type="submit">🚚 Tradu mesajul</button>
+
+</form>
+
+
+</div>
+</body>
+
+</html>

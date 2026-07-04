@@ -11,58 +11,13 @@ const app = express();
 const port = 4569;
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
 
 app.get("/", (req, res) => {
-  res.send(`
-    <h1>TEST HERMES 999</h1>
-    <p>AI Translator for Drivers</p>
-    <p><i>Scrie ce vrei să spui la interviu. Hermes traduce politicos și natural.</i></p>
-<h2>Direcția traducerii</h2>
-
-    <form method="POST" action="/ask">
-      <textarea name="message" rows="6" cols="60"></textarea>
-      <br><br>
-      <label>
-  <input type="radio" name="lang" value="de" checked>
-  Română → Germană
-</label>
-
-<br>
-
-<label>
-  <input type="radio" name="lang" value="ro">
-  Germană → Română
-</label>
-<b>Mod:</b><br>
-
-<label>
-<input type="radio" name="mode" value="translate" checked>
-Traducere
-</label>
-
-<br>
-
-<label>
-<input type="radio" name="mode" value="email">
-Email profesional
-</label>
-<br>
-
-<label>
-<input type="radio" name="mode" value="transport">
-🚛 Transport
-</label>
-
-<br>
-
-
-<br><br>
-
-<br><br>
-      <button type="submit">🚛 Tradu mesajul</button>
-    </form>
-  `);
+    res.sendFile(__dirname + "/public/index.html");
 });
+
+
 
 app.get("/test", (req, res) => {
   res.send("Hermes test OK");
@@ -71,18 +26,31 @@ app.post("/ask", async (req, res) => {
   try {
     const message = req.body.message;
     const lang = req.body.lang;
+    console.log("LANG =", lang);
+
     const mode = req.body.mode;
+    console.log("LANG =", lang);
+console.log("MODE =", mode);
     const response = await client.responses.create({
       model: "gpt-4.1-mini",
     input:
-  mode === "interview"
-    ? "Formulează un răspuns natural și profesionist pentru un interviu de angajare în Germania. Răspunde în germană.\n\n" + message
-    : mode === "email"
-    ? "Transformă textul într-un e-mail profesional în germană. Răspunde doar cu e-mailul final.\n\n" + message
-    : lang === "ro"
-    ? "Tradu textul în română, clar și natural. Răspunde doar cu traducerea.\n\n" + message
-    : "Tradu textul în germană, natural și politicos. Răspunde doar cu traducerea.\n\n" + message
-    });
+mode === "interview"
+? "Formulează un răspuns natural și profesionist pentru un interviu de angajare în Germania. Răspunde în germană. Răspunde doar cu textul final.\n\n" + message
+: mode === "email"
+? "Transformă textul într-un e-mail profesional în germană. Răspunde doar cu e-mailul final.\n\n" + message
+
+: mode === "transport"
+? (
+    lang === "ro"
+      ? "Acționezi ca un expert în transport rutier internațional. Reformulează și traduce mesajul în română, profesional și clar.\n\n"
+      : "Act as an expert in international road transport. Rewrite and translate the message into German, professionally and naturally.\n\n"
+  ) + message
+    
+: lang === "ro"
+? "Tradu textul în română, clar și natural. Răspunde doar cu traducerea.\n\n" + message
+: "Tradu textul în germană, natural și politicos. Răspunde doar cu traducerea.\n\n" + message
+});
+    
     const translatedText = response.output_text;
 
     res.send(`
