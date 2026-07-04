@@ -144,14 +144,36 @@ app.post("/correct", async (req, res) => {
                 "Răspunde doar cu textul corectat.\n\n" +
                 message,
         });
-
+        
         res.send(response.output_text);
     } catch (err) {
         console.error(err);
         res.status(500).send("Eroare la corectare.");
     }
 });
+app.post("/improve", async (req, res) => {
+  try {
+    const message = req.body.message || "";
 
+    const response = await client.responses.create({
+      model: "gpt-4.1-mini",
+      input: `
+Reformulează următorul mesaj într-un stil profesionist și natural.
+Corectează ortografia, gramatica și punctuația.
+Păstrează sensul mesajului.
+Nu adăuga informații noi.
+Răspunde doar cu textul îmbunătățit.
+
+Mesaj:
+${message}`,
+    });
+
+    res.send(response.output_text);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Eroare la îmbunătățire.");
+  }
+});
 app.listen(port, () => {
     console.log("Hermes ruleaza pe portul " + port);
 });

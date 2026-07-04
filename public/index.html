@@ -47,6 +47,11 @@
 <button type="button" onclick="correctText()">
 ✨ Corectează textul
 </button>
+<button type="button" onclick="improveText()">
+🧠 Îmbunătățește mesajul
+</button>
+
+
 
 <div id="loading" style="display:none; margin-top:15px; color:#1d4ed8; font-weight:bold;">
 ⏳ AGM AI analizează textul...
@@ -146,10 +151,32 @@ async function correctText() {
     });
 try {
     const correctedText = await response.text();
-    textarea.value = correctedText;
+    document.getElementById("result").value = correctedText;
 } finally {
     document.getElementById("loading").style.display = "none";
 }
+}
+async function improveText() {
+    
+    const textarea = document.querySelector("textarea[name='message']");
+    const text = textarea.value;
+    
+    document.getElementById("loading").style.display = "block";
+
+    const formData = new FormData();
+    formData.append("message", text);
+
+    const response = await fetch("/improve", {
+        method: "POST",
+        body: new URLSearchParams(formData)
+    });
+
+    try {
+        const improvedText = await response.text();
+        document.getElementById("result").value = improvedText;
+    } finally {
+        document.getElementById("loading").style.display = "none";
+    }
 }
 </script>
 
