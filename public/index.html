@@ -48,6 +48,9 @@
 ✨ Corectează textul
 </button>
 
+<div id="loading" style="display:none; margin-top:15px; color:#1d4ed8; font-weight:bold;">
+⏳ AGM AI analizează textul...
+</div>
 <br><br>
 
 <br><br>
@@ -133,7 +136,7 @@ function clearMessage() {
 async function correctText() {
     const textarea = document.querySelector("textarea[name='message']");
     const text = textarea.value;
-
+   document.getElementById("loading").style.display = "block";
     const formData = new FormData();
     formData.append("message", text);
 
@@ -141,9 +144,12 @@ async function correctText() {
         method: "POST",
         body: new URLSearchParams(formData)
     });
-
+try {
     const correctedText = await response.text();
     textarea.value = correctedText;
+} finally {
+    document.getElementById("loading").style.display = "none";
+}
 }
 </script>
 
