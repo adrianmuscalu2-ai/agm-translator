@@ -10,20 +10,47 @@
 </head>
 
 <body>
-    <div class="container"></div>
-    <h1>TEST HERMES 999</h1>
+    <div class="container">
+    <h1>🚛 A.G.M. TRANSLATOR</h1>
+🌍 Direcția traducerii
 
-<p>AI Translator for Drivers</p>
+<p><b>Bun venit în A.G.M. Translator!</b></p>
 
-<p><i>Scrie ce vrei să spui la interviu. Hermes traduce politicos și natural.</i></p>
+<p>Partenerul tău AI pentru transportul european.</p>
+
+<i>Scrie mesajul tău. AGM îl corectează, îl reformulează și îl traduce natural, păstrând un ton profesionist.</i>
+
+
 
 <h2>Direcția traducerii</h2>
 <form method="POST" action="/ask">
 
+
+
+
+
+
+
+
+
 <textarea name="message" rows="6" cols="60"></textarea>
 
 <br><br>
+<button type="button" onclick="startDictation()">
+🎤 Vorbește
+</button>
 
+<button type="button" onclick="clearMessage()">
+🧹 Șterge textul
+</button>
+
+<button type="button" onclick="correctText()">
+✨ Corectează textul
+</button>
+
+<br><br>
+
+<br><br>
 <label>
 <input type="radio" name="lang" value="de" checked>
 Română ➜ Germană
@@ -61,8 +88,52 @@ Germană ➜ Română
 <br><br>
 
 <button type="submit">🚚 Tradu mesajul</button>
+<br><br>
+
+<h2>Rezultat</h2>
+
+<textarea id="result" rows="8" cols="60" readonly></textarea>
+
+<br><br>
+
+
 
 </form>
+<script>
+function startDictation() {
+    const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        alert("Browserul nu suportă recunoașterea vocală.");
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "ro-RO";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.start();
+
+    recognition.onresult = function(event) {
+        document.querySelector("textarea[name='message']").value =
+            event.results[0][0].transcript;
+    };
+
+    recognition.onerror = function(event) {
+        alert("Eroare microfon: " + event.error);
+    };
+}
+
+function clearMessage() {
+    document.querySelector("textarea[name='message']").value = "";
+}
+
+async function correctText() {
+    alert("Corectorul va fi conectat în pasul următor.");
+}
+</script>
 
 
 </div>
