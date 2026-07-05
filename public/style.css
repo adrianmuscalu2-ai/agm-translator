@@ -47,3 +47,24 @@ button{
 button:hover{
     background:#0077d9;
 }
+.button-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.button-row button {
+    flex: 1;
+    min-width: 150px;
+}
+.logo-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo {
+    max-width: 320px;
+    width: 100%;
+    border-radius: 15px;
+}

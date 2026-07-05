@@ -1,0 +1,102 @@
+[1mdiff --git a/index.js b/index.js[m
+[1mindex 6b322e6..cd500bc 100644[m
+[1m--- a/index.js[m
+[1m+++ b/index.js[m
+[36m@@ -17,16 +17,43 @@[m [mapp.get("/", (req, res) => {[m
+     res.sendFile(__dirname + "/public/index.html");[m
+ });[m
+ [m
+[32m+[m[32m// ... celelalte require-uri[m
+[32m+[m
+[32m+[m[32mconst SAFETY_RULES = `[m
+[32m+[m[32mIMPORTANT:[m
+[32m+[m[32m- Nu inventa nume, prenume, companii sau date personale.[m
+[32m+[m[32m- Nu adăuga semnături.[m
+[32m+[m[32m- Nu folosi placeholdere precum:[m
+[32m+[m[32m  [Name][m
+[32m+[m[32m  [Ihr Name][m
+[32m+[m[32m  [Numele dumneavoastră][m
+[32m+[m[32m  [Semnătura][m
+[32m+[m[32m- Nu adăuga informații care nu există în mesaj.[m
+[32m+[m[32m- Răspunde numai cu textul final.[m
+[32m+[m[32m`;[m
+[32m+[m
+[32m+[m
+ app.get("/test", (req, res) => {[m
+     res.send("Hermes test OK");[m
+ });[m
+ [m
+ app.post("/ask", async (req, res) => {[m
+[32m+[m[32mreturn res.send([m
+[32m+[m[32m    "LANG=" + req.body.lang +[m
+[32m+[m[32m    " MODE=" + req.body.mode +[m
+[32m+[m[32m    " MESSAGE=" + req.body.message[m
+[32m+[m[32m);[m
+     try {[m
+[31m-        const message = req.body.message;[m
+[31m-        const lang = req.body.lang;[m
+[31m-        const mode = req.body.mode;[m
+[31m-[m
+[32m+[m[32mconst message = req.body.message;[m
+[32m+[m[32mconst lang = req.body.lang;[m
+[32m+[m[32mconst mode = req.body.mode;[m
+[32m+[m
+[32m+[m[32mconsole.log("A INTRAT IN /ASK");[m
+[32m+[m[32mconsole.log(req.body);[m
+[32m+[m[32mconsole.log("LANG =", lang);[m
+[32m+[m[32mconsole.log("MODE =", mode);[m
+[32m+[m[32mconsole.log("MESAJ =", message);[m
+[32m+[m[32mconst userSignature = req.body.profileSignature || "";[m
+         console.log("LANG =", lang);[m
+         console.log("MODE =", mode);[m
+ [m
+[36m@@ -47,13 +74,13 @@[m [mif (mode === "transport") {[m
+         if (mode === "interview") {[m
+             prompt =[m
+                 lang === "ro"[m
+[31m-                    ? context + "\nFormulează un răspuns natural și profesionist pentru un interviu de angajare în România. Răspunde doar cu textul final.\n\n"[m
+[31m-                    : context + "\nFormulează un răspuns natural și profesionist pentru un interviu de angajare în Germania. Răspunde doar cu textul final.\n\n";[m
+[32m+[m[32m    ? context + "\nFormulează un răspuns natural și profesionist în limba română. Nu adăuga nume, semnături sau placeholdere. Răspunde doar cu textul final.\n"[m
+[32m+[m[32m    : context + "\nTradu textul în limba germană. Răspunde EXCLUSIV în limba germană. Nu păstra niciun cuvânt în română. Nu adăuga nume, semnături sau placeholdere. Răspunde doar cu textul final.\n";[m
+         } else if (mode === "email") {[m
+             prompt =[m
+                 lang === "ro"[m
+[31m-                    ? context + "\nTransformă textul într-un e-mail profesional în română. Răspunde doar cu e-mailul final.\n\n"[m
+[31m-                    : context + "\nTransformă textul într-un e-mail profesional în germană. Răspunde doar cu e-mailul final.\n\n";[m
+[32m+[m[32m                    ? context + "\nTransformă textul într-un e-mail profesional în română. Răspunde doar cu e-mailul final.\n\nNu folosi [Numele utilizatorului]. Încheie doar cu Cu stimă."[m
+[32m+[m[32m                    : context + "\nTransformă textul într-un e-mail profesional în germană. Răspunde doar cu e-mailul final.\n\nNu folosi [Ihr Name] sau [Name des Nutzers]. Încheie doar cu Mit freundlichen Grüßen.";[m
+         } else if (mode === "transport") {[m
+             prompt =[m
+                 lang === "ro"[m
+[36m@@ -66,12 +93,26 @@[m [mif (mode === "transport") {[m
+                     : "Tradu textul în germană, natural și politicos. Răspunde doar cu traducerea.\n\n";[m
+         }[m
+ [m
+[31m-        const response = await client.responses.create({[m
+[31m-            model: "gpt-4.1-mini",[m
+[31m-            input: prompt + message,[m
+[31m-        });[m
+[32m+[m[41m     [m
+[32m+[m[32mconst response = await client.responses.create({[m
+[32m+[m[32m  model: "gpt-4.1-mini",[m
+[32m+[m[32m  input:[m
+[32m+[m[32m    prompt +[m
+[32m+[m[32m    "\n\nMesaj:\n" +[m
+[32m+[m[32m    message[m
+[32m+[m[32m});[m
+[32m+[m
+ [m
+[31m-        const translatedText = response.output_text;[m
+[32m+[m[32mlet translatedText = response.output_text;[m
+[32m+[m[32mtranslatedText = translatedText[m
+[32m+[m[32m    .replace(/\[Ihr Name\]/gi, "")[m
+[32m+[m[32m    .replace(/\[Name des Nutzers\]/gi, "")[m
+[32m+[m[32m    .replace(/\[Numele utilizatorului\]/gi, "")[m
+[32m+[m[32m    .replace(/\[Numele Dumneavoastră\]/gi, "")[m
+[32m+[m[32m    .replace(/\[Numele dumneavoastră\]/gi, "")[m
+[32m+[m[32m    .replace(/\[Name\]/gi, "")[m
+[32m+[m[32m    .replace(/\[Semnătura\]/gi, "")[m
+[32m+[m[32m    .trim();[m
+ [m
+         res.send(`[m
+ <!DOCTYPE html>[m
