@@ -76,69 +76,83 @@ function closeProfile() {
 function clearMessage() {
     document.querySelector("textarea[name='message']").value = "";
 }
-function speakText() {
-    const text = document.querySelector("textarea[name='message']").value;
+async function speakText() {
+  const textarea = document.querySelector('textarea[name="message"]');
+  const text = textarea.value;
 
-    if (!text.trim()) {
-        alert("Nu există niciun text de redat.");
-        return;
-    }
+  if (!text.trim()) {
+    alert("Nu există niciun text de redat.");
+    return;
+  }
 
-    speechSynthesis.cancel();
+  const direction = document.querySelector('input[name="lang"]:checked').value;
+  const lang = direction === "de" ? "ro" : "de";
+const loading = document.getElementById("loading");
+loading.innerText = "🔊 Se generează vocea...";
+loading.style.display = "block";
+  const response = await fetch("/speak", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      text: text,
+      lang: lang,
+    }),
+  });
 
+  if (!response.ok) {
+    alert("Eroare la generarea vocii.");
+    return;
+  }
 
-const utterance = new SpeechSynthesisUtterance(text);
-const direction = document.querySelector('input[name="lang"]:checked').value;
-const voices = speechSynthesis.getVoices();
-const targetLang = direction === "de" ? "ro-RO" : "de-DE";
-
-utterance.lang = targetLang;
-
-const voice = voices.find(v => v.name === "Google Deutsch") ||
-    voices.find(v => v.lang === targetLang) ||
-    voices.find(v => v.lang.startsWith(targetLang.split("-")[0]));
-
-if (voice) {
-    utterance.voice = voice;
+  const audioBlob = await response.blob();
+  const audioUrl = URL.createObjectURL(audioBlob);
+  const audio = new Audio(audioUrl);
+  await audio.play();
+  loading.style.display = "none";
 }
 
-    utterance.rate = 1;
-    utterance.pitch = 1;
 
-    speechSynthesis.speak(utterance);
-}
-function speakResult() {
-    const result = document.getElementById("result");
 
-    if (!result || !result.value.trim()) {
+async function speakResult() {
+  const result = document.getElementById("result");
+
+  if (!result || !result.value.trim()) {
     alert("Nu există nicio traducere.");
     return;
+  }
+
+  const direction = document.querySelector('input[name="lang"]:checked').value;
+  const lang = direction === "de" ? "de" : "ro";
+const loading = document.getElementById("loading");
+loading.innerText = "🔊 Se generează vocea...";
+loading.style.display = "block";
+  const response = await fetch("/speak", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      text: result.value,
+      lang: lang,
+    }),
+  });
+
+  if (!response.ok) {
+    alert("Eroare la generarea vocii.");
+    return;
+  }
+
+  const audioBlob = await response.blob();
+  const audioUrl = URL.createObjectURL(audioBlob);
+  const audio = new Audio(audioUrl);
+  await audio.play();
+  loading.style.display = "none";
 }
 
-speechSynthesis.cancel();
 
-const utterance = new SpeechSynthesisUtterance(result.value);
 
-    const direction = document.querySelector('input[name="lang"]:checked').value;
-    const voices = speechSynthesis.getVoices();
-
-    const targetLang = direction === "de" ? "de-DE" : "ro-RO";
-
-    utterance.lang = targetLang;
-
-    const voice =
-        voices.find(v => v.lang === targetLang) ||
-        voices.find(v => v.lang.startsWith(targetLang.split("-")[0]));
-
-    if (voice) {
-        utterance.voice = voice;
-    }
-
-    utterance.rate = 1;
-    utterance.pitch = 1;
-
-    speechSynthesis.speak(utterance);
-}
 async function correctText() {
     const textarea = document.querySelector("textarea[name='message']");
     const text = textarea.value;

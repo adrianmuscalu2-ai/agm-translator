@@ -9,7 +9,7 @@ const client = new OpenAI({
 
 const app = express();
 const port = 4569;
-
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
@@ -119,7 +119,41 @@ res.send(translatedText);
         res.send("Eroare la conectarea cu OpenAI.");
     }
 });
+app.post("/speak", async (req, res) => {
+  try {
+    const text = req.body.text || "";
+    const lang = req.body.lang || "ro";
 
+    if (!text.trim()) {
+      return res.status(400).send("Nu există text pentru redare.");
+    }
+
+    const voice = lang === "de" ? "cedar" : "marin";
+
+    const audio = await client.audio.speech.create({
+      model: "gpt-4o-mini-tts",
+      voice: voice,
+      input: text,
+      instructions:lang === "de"
+    
+      ? "Speak in German, naturally, at a fast but clear pace, with minimal pauses."
+      : "Speak in Romanian, naturally, at a fast but clear pace, with minimal pauses.",
+      response_format: "mp3",
+    });
+
+    const buffer = Buffer.from(await audio.arrayBuffer());
+
+    res.set({
+      "Content-Type": "audio/mpeg",
+      "Content-Length": buffer.length,
+    });
+
+    res.send(buffer);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Eroare la generarea vocii.");
+  }
+});
 app.post("/correct", async (req, res) => {
     try {
         const message = req.body.message || "";
